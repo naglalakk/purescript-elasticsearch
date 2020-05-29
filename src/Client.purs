@@ -6,13 +6,14 @@ import Data.Argonaut            (decodeJson
 import Data.Argonaut.Core       (Json)
 import Data.Argonaut.Decode     (class DecodeJson)
 import Data.Either              (Either(..))
+import Data.Maybe               (Maybe(..))
 import Data.Traversable         (traverse)
 
 newtype SearchHit r = SearchHit
   { id     :: String
   , index  :: String
   , type_  :: String
-  , score  :: Number
+  , score  :: Maybe Number
   , source :: r
   }
 
@@ -27,7 +28,7 @@ instance decodeJsonSearchHit :: DecodeJson r => DecodeJson (SearchHit r) where
     pure $ SearchHit { id, index, type_, score, source }
 
 newtype SearchResponse r = SearchResponse
-  { maxScore :: Number
+  { maxScore :: Maybe Number
   , total    :: Int
   , hits     :: Array (SearchHit r)
   }
