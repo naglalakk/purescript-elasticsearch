@@ -91,27 +91,42 @@ let additions =
 Example:
 -------------------------------
 let additions =
-  { benchotron =
+  { argonaut =
+      { dependencies = 
+          ["argonaut-codecs"
+          ,"argonaut-core"
+          ,"argonaut-traversals"]
+      , repo = 
+          "https://github.com/purescript-contrib/purescript-argonaut"
+      , version = 
+        "2b81ce16b4c0e8cac0be88b4bf616523b6ddda56"
+      }
+  , argonaut-codecs =
       { dependencies =
-          [ "arrays"
-          , "exists"
-          , "profunctor"
-          , "strings"
-          , "quickcheck"
-          , "lcg"
-          , "transformers"
-          , "foldable-traversable"
-          , "exceptions"
-          , "node-fs"
-          , "node-buffer"
-          , "node-readline"
-          , "datetime"
-          , "now"
-          ]
-      , repo =
-          "https://github.com/hdgarrood/purescript-benchotron.git"
-      , version =
-          "v7.0.0"
+          ["argonaut-core"
+          ,"arrays"
+          ,"effect"
+          ,"foreign-object"
+          ,"identity"
+          ,"integers"
+          ,"maybe"
+          ,"nonempty"
+          ,"ordered-collections"
+          ,"record"]
+      , repo = 
+          "https://github.com/purescript-contrib/purescript-argonaut-codecs/"
+      , version = 
+          "9b00fcc6b04bd999d3fd3b9de2ae830bff473a71"
+      }
+  , argonaut-traversals = 
+      { dependencies = 
+          ["argonaut-core"
+          ,"argonaut-codecs"
+          ,"profunctor-lenses"]
+      , repo = 
+          "https://github.com/purescript-contrib/purescript-argonaut-traversals"
+      , version = 
+          "9543b517011a4dbc66dfd5cd4d8d774aa620b764"
       }
   }
 -------------------------------
@@ -123,6 +138,44 @@ let upstream =
 
 let overrides = {=}
 
-let additions = {=}
+let additions =
+  { argonaut =
+      { dependencies = 
+          ["argonaut-codecs"
+          ,"argonaut-core"
+          ,"argonaut-traversals"]
+      , repo = 
+          "https://github.com/purescript-contrib/purescript-argonaut"
+      , version = 
+        "2b81ce16b4c0e8cac0be88b4bf616523b6ddda56"
+      }
+  , argonaut-codecs =
+      { dependencies =
+          ["argonaut-core"
+          ,"arrays"
+          ,"effect"
+          ,"foreign-object"
+          ,"identity"
+          ,"integers"
+          ,"maybe"
+          ,"nonempty"
+          ,"ordered-collections"
+          ,"record"]
+      , repo = 
+          "https://github.com/purescript-contrib/purescript-argonaut-codecs/"
+      , version = 
+          "9b00fcc6b04bd999d3fd3b9de2ae830bff473a71"
+      }
+  , argonaut-traversals = 
+      { dependencies = 
+          ["argonaut-core"
+          ,"argonaut-codecs"
+          ,"profunctor-lenses"]
+      , repo = 
+          "https://github.com/purescript-contrib/purescript-argonaut-traversals"
+      , version = 
+          "9543b517011a4dbc66dfd5cd4d8d774aa620b764"
+      }
+  }
 
 in  upstream // overrides // additions

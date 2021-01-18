@@ -1,13 +1,14 @@
 module Elasticsearch.Client where
 
 import Prelude
-import Data.Argonaut            (decodeJson
-                                ,(.:))
-import Data.Argonaut.Core       (Json)
-import Data.Argonaut.Decode     (class DecodeJson)
-import Data.Either              (Either(..))
-import Data.Maybe               (Maybe(..))
-import Data.Traversable         (traverse)
+
+import Data.Argonaut (decodeJson, (.:))
+import Data.Argonaut.Core (Json)
+import Data.Argonaut.Decode (class DecodeJson)
+import Data.Argonaut.Decode.Error (JsonDecodeError)
+import Data.Either (Either(..))
+import Data.Maybe (Maybe)
+import Data.Traversable (traverse)
 
 newtype SearchHit r = SearchHit
   { id     :: String
@@ -50,5 +51,5 @@ instance decodeSearchResponse :: DecodeJson r => DecodeJson (SearchResponse r) w
       , hits
       }
 
-decodeJsonSearchHitArray :: forall r. DecodeJson r => Json -> Either String (Array (SearchHit r))
+decodeJsonSearchHitArray :: forall r. DecodeJson r => Json -> Either JsonDecodeError (Array (SearchHit r))
 decodeJsonSearchHitArray json = decodeJson json >>= traverse decodeJson

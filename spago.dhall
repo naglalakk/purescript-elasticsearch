@@ -5,7 +5,7 @@ You can edit this file as you like.
 { name =
     "purescript-es"
 , dependencies =
-    [ "argonaut", "effect", "console", "psci-support" ]
+    [ "argonaut", "effect", "console", "generics-rep", "psci-support" ]
 , packages =
     ./packages.dhall
 , sources =
