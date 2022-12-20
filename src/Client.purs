@@ -2,54 +2,61 @@ module Elasticsearch.Client where
 
 import Prelude
 
-import Data.Argonaut (decodeJson, (.:))
+import Data.Argonaut (decodeJson, (.:), (.:?))
 import Data.Argonaut.Core (Json)
 import Data.Argonaut.Decode (class DecodeJson)
 import Data.Argonaut.Decode.Error (JsonDecodeError)
 import Data.Either (Either(..))
 import Data.Maybe (Maybe)
+import Data.Newtype (class Newtype, unwrap)
 import Data.Traversable (traverse)
 
 newtype SearchHit r = SearchHit
-  { id     :: String
-  , index  :: String
-  , type_  :: String
-  , score  :: Maybe Number
-  , source :: r
+  { source :: r
+  }
+
+newtype SearchHits r = SearchHits
+  { hits :: Array (SearchHit r)
+  , maxScore :: Maybe Number
+  }
+
+newtype SearchResult r = SearchResult
+  { took :: Int
+  , timedOut :: Boolean
+  , hits :: SearchHits r
   }
 
 instance decodeJsonSearchHit :: DecodeJson r => DecodeJson (SearchHit r) where
   decodeJson json = do
     obj <- decodeJson json
-    id     <- obj .: "_id"
-    index  <- obj .: "_index"
-    type_  <- obj .: "_type"
-    score  <- obj .: "_score"
     source <- obj .: "_source"
-    pure $ SearchHit { id, index, type_, score, source }
+    pure $ SearchHit { source }
 
-newtype SearchResponse r = SearchResponse
-  { maxScore :: Maybe Number
-  , total    :: Int
-  , hits     :: Array (SearchHit r)
-  }
-
-instance decodeSearchResponse :: DecodeJson r => DecodeJson (SearchResponse r) where
+instance decodeJsonSearchHits :: DecodeJson r => DecodeJson (SearchHits r) where
   decodeJson json = do
     obj <- decodeJson json
-    maxScore <- obj .: "max_score"
-    total <- obj .: "total"
-    hitObj <- obj .: "hits"
-    let 
-      hits = case decodeJsonSearchHitArray hitObj of
-        Right h -> h
-        Left err -> []
+    hits <- obj .: "hits"
+    maxScore <- obj .:? "max_score"
+    pure $ SearchHits { hits, maxScore }
 
-    pure $ SearchResponse
-      { maxScore
-      , total
+instance decodeSearchResult :: DecodeJson r => DecodeJson (SearchResult r) where
+  decodeJson json = do
+    obj <- decodeJson json
+    took <- obj .: "took"
+    timedOut <- obj .: "timed_out"
+    hits <- obj .: "hits"
+
+    pure $ SearchResult
+      { took
+      , timedOut
       , hits
       }
 
 decodeJsonSearchHitArray :: forall r. DecodeJson r => Json -> Either JsonDecodeError (Array (SearchHit r))
 decodeJsonSearchHitArray json = decodeJson json >>= traverse decodeJson
+
+getSearchHitsSources :: forall r. DecodeJson r => SearchResult r -> Array r
+getSearchHitsSources (SearchResult result) = case result.hits of
+  SearchHits hits -> map (\(SearchHit x) -> x.source) hits.hits
+  _ -> []
+
